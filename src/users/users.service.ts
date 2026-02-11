@@ -35,10 +35,25 @@ export class UsersService {
     return [];
   }
 
-  async findOneByEmail(email: string): Promise<User> {
+  async findOneByEmailWithPassword(email: string): Promise<User> {
+    try {
+      return this.userRepository
+        .createQueryBuilder('user')
+        .addSelect('user.password')
+        .where('user.email = :email', { email })
+        .getOneOrFail();
+
+    } catch (error) {
+      this.handleErrors(error);
+    }
+  }
+
+  async findOneById(id: string): Promise<User> {
     try {
 
-      return await this.userRepository.findOneByOrFail({ email });
+      const user = await this.userRepository.findOneByOrFail({ id });
+
+      return user;
 
     } catch (error) {
       this.handleErrors(error);
