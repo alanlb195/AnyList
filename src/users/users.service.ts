@@ -1,9 +1,10 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { SignupInput } from 'src/auth/dto/inputs/signup.input';
-import { Repository } from 'typeorm';
+import { ArrayOverlap, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as argon2 from 'argon2';
+import { ValidRoles } from 'src/auth/enums/valid-roles.enums';
 
 @Injectable()
 export class UsersService {
@@ -31,8 +32,19 @@ export class UsersService {
 
   }
 
-  async findAll(): Promise<User[]> {
-    return [];
+  async findAll(roles: ValidRoles[]): Promise<User[]> {
+
+    if (roles.length === 0) return this.userRepository.find();
+
+    return this.userRepository.find({
+      where: {
+        roles: ArrayOverlap(roles),
+      },
+      //? Not necessary to load relations, entity does it automatically
+      // relations: {
+      //   updatedBy: true
+      // }
+    });
   }
 
   async findOneByEmailWithPassword(email: string): Promise<User> {
@@ -60,8 +72,16 @@ export class UsersService {
     }
   }
 
-  async blockUser(id: string): Promise<User> {
-    throw new Error('Method not implemented.');
+  async blockUser(id: string, adminUser: User): Promise<User> {
+
+    const userToBlock = await this.findOneById(id);
+
+    await this.userRepository.update(userToBlock.id, { isActive: false, updatedBy: adminUser });
+
+    return {
+      ...userToBlock,
+      isActive: false
+    };
   }
 
 
