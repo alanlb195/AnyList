@@ -2,13 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Item {
-  id: ID!
-  name: String!
-  quantity: Int!
-  quantityUnits: String
-}
-
 type User {
   id: ID!
   fullName: String!
@@ -16,6 +9,7 @@ type User {
   roles: [ValidRoles!]!
   isActive: Boolean!
   updatedBy: User
+  items: [Item!]!
 }
 
 """Roles permitidos en el sistema"""
@@ -24,14 +18,21 @@ enum ValidRoles {
   user
 }
 
+type Item {
+  id: ID!
+  name: String!
+  quantityUnits: String
+  user: User!
+}
+
 type AuthResponse {
   token: String!
   user: User!
 }
 
 type Query {
-  items: [Item!]!
-  item(id: ID!): Item!
+  findAllItems: [Item!]!
+  findOneItem(id: ID!): Item!
   users(roles: [ValidRoles!] = []): [User!]!
   user(id: ID!): User!
   revalidateToken: AuthResponse!
@@ -41,6 +42,7 @@ type Mutation {
   createItem(createItemInput: CreateItemInput!): Item!
   updateItem(updateItemInput: UpdateItemInput!): Item!
   removeItem(id: ID!): Item!
+  updateUser(updateUserInput: UpdateUserInput!): User!
   blockUser(id: ID!): User!
   signup(signupInput: SignupInput!): AuthResponse!
   login(loginInput: LoginInput!): AuthResponse!
@@ -48,14 +50,19 @@ type Mutation {
 
 input CreateItemInput {
   name: String!
-  quantity: Float!
   quantityUnits: String
 }
 
 input UpdateItemInput {
   name: String
-  quantity: Float
   quantityUnits: String
+  id: ID!
+}
+
+input UpdateUserInput {
+  email: String
+  fullName: String
+  password: String
   id: ID!
 }
 
