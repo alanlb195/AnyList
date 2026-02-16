@@ -10,6 +10,7 @@ type User {
   isActive: Boolean!
   updatedBy: User
   items: [Item!]!
+  itemCount: Int!
 }
 
 """Roles permitidos en el sistema"""
