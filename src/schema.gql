@@ -17,6 +17,7 @@ type User {
 enum ValidRoles {
   admin
   user
+  superUser
 }
 
 type Item {
@@ -24,6 +25,7 @@ type Item {
   name: String!
   quantityUnits: String
   user: User!
+  category: String!
 }
 
 type AuthResponse {
@@ -47,15 +49,18 @@ type Mutation {
   blockUser(id: ID!): User!
   signup(signupInput: SignupInput!): AuthResponse!
   login(loginInput: LoginInput!): AuthResponse!
+  executeSeed: Boolean!
 }
 
 input CreateItemInput {
   name: String!
+  category: String!
   quantityUnits: String
 }
 
 input UpdateItemInput {
   name: String
+  category: String
   quantityUnits: String
   id: ID!
 }

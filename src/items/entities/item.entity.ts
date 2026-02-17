@@ -26,4 +26,8 @@ export class Item {
   @Index('userIdIndex')
   @Field(() => User)
   user: User;
+
+  @Column()
+  @Field(() => String)
+  category: string;
 }
