@@ -23,7 +23,7 @@ export class UsersResolver {
     private readonly itemsService: ItemsService,
   ) { }
 
-  @Query(() => [User], { name: 'users' })
+  @Query(() => [User], { name: 'findAllUsers' })
   findAll(
     @Args() validRoles: ValidRolesArgs,
     @CurrentUser([ValidRoles.admin, ValidRoles.user]) currentUser: User
@@ -31,7 +31,7 @@ export class UsersResolver {
     return this.usersService.findAll(validRoles.roles);
   }
 
-  @Query(() => User, { name: 'user' })
+  @Query(() => User, { name: 'findOneUser' })
   findOne(
     @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
     @CurrentUser([ValidRoles.admin]) currentUser: User

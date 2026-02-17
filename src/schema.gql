@@ -34,10 +34,10 @@ type AuthResponse {
 }
 
 type Query {
-  findAllItems: [Item!]!
+  findAllItems(limit: Int! = 10, offset: Int! = 0, search: String): [Item!]!
   findOneItem(id: ID!): Item!
-  users(roles: [ValidRoles!] = []): [User!]!
-  user(id: ID!): User!
+  findAllUsers(roles: [ValidRoles!] = []): [User!]!
+  findOneUser(id: ID!): User!
   revalidateToken: AuthResponse!
 }
 

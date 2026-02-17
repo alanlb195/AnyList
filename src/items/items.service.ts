@@ -1,11 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateItemInput, UpdateItemInput } from './dto/inputs';
 
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Item } from './entities/item.entity';
 import { User } from 'src/users/entities/user.entity';
+
+import { PaginationArgs, SearchArgs } from 'src/common/dto/args';
 
 @Injectable()
 export class ItemsService {
@@ -27,16 +29,36 @@ export class ItemsService {
   }
 
 
-  async findAll(user: User): Promise<Item[]> {
-    return this.itemsRepository.find({
-      //? lazy: true in entity is required for this to work
-      // relations: { user: true },
-      where: {
-        user: {
-          id: user.id
-        }
-      }
-    });
+  async findAll(user: User, paginationArgs: PaginationArgs, searchArgs: SearchArgs): Promise<Item[]> {
+
+    const { limit, offset } = paginationArgs;
+    const { search } = searchArgs;
+
+    const queryBuilder = this.itemsRepository.createQueryBuilder()
+      .take(limit)
+      .skip(offset)
+      .where(`"userId" = :userId`, { userId: user.id });
+
+    if (search) {
+      queryBuilder.andWhere('LOWER(name) like :name', { name: `%${search.toLowerCase()}%` });
+    }
+
+    return queryBuilder.getMany();
+
+
+    // return this.itemsRepository.find({
+    //   //? lazy: true in entity is required for this to work
+    //   // relations: { user: true },
+    //   where: {
+    //     user: {
+    //       id: user.id
+    //     },
+    //     name: Like(`%${search}%`)
+    //   },
+    //   take: limit,
+    //   skip: offset
+    // });
+
   }
 
 
