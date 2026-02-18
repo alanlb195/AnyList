@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type List {
+  id: ID!
+  name: String!
+  user: User!
+}
+
 type User {
   id: ID!
   fullName: String!
@@ -10,7 +16,9 @@ type User {
   isActive: Boolean!
   updatedBy: User
   items(limit: Int! = 10, offset: Int! = 0, search: String): [Item!]!
+  lists(limit: Int! = 10, offset: Int! = 0, search: String): [List!]!
   itemCount: Int!
+  listsCount: Int!
 }
 
 """Roles permitidos en el sistema"""
@@ -38,6 +46,8 @@ type Query {
   findOneItem(id: ID!): Item!
   findAllUsers(roles: [ValidRoles!] = []): [User!]!
   findOneUser(id: ID!): User!
+  findAllLists(limit: Int! = 10, offset: Int! = 0, search: String): [List!]!
+  findOneList(id: ID!): List!
   revalidateToken: AuthResponse!
 }
 
@@ -47,6 +57,9 @@ type Mutation {
   removeItem(id: ID!): Item!
   updateUser(updateUserInput: UpdateUserInput!): User!
   blockUser(id: ID!): User!
+  createList(createListInput: CreateListInput!): List!
+  updateList(updateListInput: UpdateListInput!): List!
+  removeList(id: ID!): List!
   signup(signupInput: SignupInput!): AuthResponse!
   login(loginInput: LoginInput!): AuthResponse!
   executeSeed: Boolean!
@@ -69,6 +82,15 @@ input UpdateUserInput {
   email: String
   fullName: String
   password: String
+  id: ID!
+}
+
+input CreateListInput {
+  name: String!
+}
+
+input UpdateListInput {
+  name: String
   id: ID!
 }
 
