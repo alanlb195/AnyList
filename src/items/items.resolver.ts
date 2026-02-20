@@ -26,7 +26,7 @@ export class ItemsResolver {
   }
 
 
-  @Query(() => [Item], { name: 'findAllItems' })
+  @Query(() => [Item], { name: 'items' })
   findAll(
     @CurrentUser() currentUser: User,
     @Args() paginationArgs: PaginationArgs,
@@ -36,7 +36,7 @@ export class ItemsResolver {
   }
 
 
-  @Query(() => Item, { name: 'findOneItem' })
+  @Query(() => Item, { name: 'item' })
   findOne(
     @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
     @CurrentUser() currentUser: User

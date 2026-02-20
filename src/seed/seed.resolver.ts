@@ -5,7 +5,7 @@ import { SeedService } from './seed.service';
 export class SeedResolver {
   constructor(private readonly seedService: SeedService) { }
 
-  @Mutation(() => Boolean, { name: 'executeSeed' })
+  @Mutation(() => Boolean, { name: 'seed' })
   async executeSeed() {
     return await this.seedService.executeSeed();
   }

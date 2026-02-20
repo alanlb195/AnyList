@@ -1,9 +1,13 @@
 import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
-import { ListsService } from './lists.service';
+import { Resolver, Query, Mutation, Args, ID, ResolveField, Parent } from '@nestjs/graphql';
 
-import { List } from './entities/list.entity';
+import { ListsService } from './lists.service';
+import { ListItemService } from 'src/list-item/list-item.service';
+
 import { User } from 'src/users/entities/user.entity';
+import { List } from './entities/list.entity';
+import { ListItem } from 'src/list-item/entities/list-item.entity';
+
 import { CreateListInput, UpdateListInput } from './dto/inputs';
 import { PaginationArgs, SearchArgs } from 'src/common/dto/args';
 
@@ -14,7 +18,10 @@ import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 @Resolver(() => List)
 @UseGuards(JwtAuthGuard)
 export class ListsResolver {
-  constructor(private readonly listsService: ListsService) { }
+  constructor(
+    private readonly listsService: ListsService,
+    private readonly listItemService: ListItemService
+  ) { }
 
   @Mutation(() => List, { name: 'createList' })
   async createList(
@@ -24,7 +31,7 @@ export class ListsResolver {
     return await this.listsService.create(createListInput, user);
   }
 
-  @Query(() => [List], { name: 'findAllLists' })
+  @Query(() => [List], { name: 'lists' })
   async findAll(
     @CurrentUser() user: User,
     @Args() paginationArgs: PaginationArgs,
@@ -33,7 +40,7 @@ export class ListsResolver {
     return await this.listsService.findAll(user, paginationArgs, searchArgs);
   }
 
-  @Query(() => List, { name: 'findOneList' })
+  @Query(() => List, { name: 'list' })
   async findOne(
     @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
     @CurrentUser() user: User
@@ -56,4 +63,22 @@ export class ListsResolver {
   ): Promise<List> {
     return this.listsService.remove(id, user);
   }
+
+  @ResolveField(() => [ListItem], { name: 'items' })
+  async getListItems(
+    @Parent() list: List,
+    @Args() paginationArgs: PaginationArgs,
+    @Args() searchArgs: SearchArgs
+  ): Promise<ListItem[]> {
+    return this.listItemService.findAll(list, paginationArgs, searchArgs);
+  }
+
+
+  @ResolveField(() => Number, { name: 'totalItems' })
+  async totalItems(
+    @Parent() list: List,
+  ): Promise<number> {
+    return this.listItemService.count(list);
+  }
+
 }

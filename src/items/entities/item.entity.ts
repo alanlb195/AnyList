@@ -1,6 +1,7 @@
-import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { ListItem } from 'src/list-item/entities/list-item.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'items' })
 @ObjectType()
@@ -14,10 +15,6 @@ export class Item {
   @Field(() => String)
   name: string;
 
-  // @Column()
-  // @Field(() => Int)
-  // quantity: number;
-
   @Column({ nullable: true })
   @Field(() => String, { nullable: true })
   quantityUnits?: string; // g / kg / ml / tsp
@@ -30,4 +27,8 @@ export class Item {
   @Column()
   @Field(() => String)
   category: string;
+
+  @OneToMany(() => ListItem, (listItem) => listItem.item, { lazy: true })
+  @Field(() => [ListItem])
+  listItem: ListItem[];
 }

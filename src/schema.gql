@@ -2,12 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type List {
-  id: ID!
-  name: String!
-  user: User!
-}
-
 type User {
   id: ID!
   fullName: String!
@@ -28,12 +22,29 @@ enum ValidRoles {
   superUser
 }
 
+type List {
+  id: ID!
+  name: String!
+  user: User!
+  items(limit: Int! = 10, offset: Int! = 0, search: String): [ListItem!]!
+  totalItems: Float!
+}
+
+type ListItem {
+  id: ID!
+  quantity: Float!
+  completed: Boolean!
+  item: Item!
+  list: List!
+}
+
 type Item {
   id: ID!
   name: String!
   quantityUnits: String
   user: User!
   category: String!
+  listItem: [ListItem!]!
 }
 
 type AuthResponse {
@@ -42,12 +53,12 @@ type AuthResponse {
 }
 
 type Query {
-  findAllItems(limit: Int! = 10, offset: Int! = 0, search: String): [Item!]!
-  findOneItem(id: ID!): Item!
-  findAllUsers(roles: [ValidRoles!] = []): [User!]!
-  findOneUser(id: ID!): User!
-  findAllLists(limit: Int! = 10, offset: Int! = 0, search: String): [List!]!
-  findOneList(id: ID!): List!
+  items(limit: Int! = 10, offset: Int! = 0, search: String): [Item!]!
+  item(id: ID!): Item!
+  users(roles: [ValidRoles!] = []): [User!]!
+  user(id: ID!): User!
+  lists(limit: Int! = 10, offset: Int! = 0, search: String): [List!]!
+  list(id: ID!): List!
   revalidateToken: AuthResponse!
 }
 
@@ -60,9 +71,10 @@ type Mutation {
   createList(createListInput: CreateListInput!): List!
   updateList(updateListInput: UpdateListInput!): List!
   removeList(id: ID!): List!
+  createListItem(createListItemInput: CreateListItemInput!): ListItem!
   signup(signupInput: SignupInput!): AuthResponse!
   login(loginInput: LoginInput!): AuthResponse!
-  executeSeed: Boolean!
+  seed: Boolean!
 }
 
 input CreateItemInput {
@@ -92,6 +104,13 @@ input CreateListInput {
 input UpdateListInput {
   name: String
   id: ID!
+}
+
+input CreateListItemInput {
+  quantity: Float
+  completed: Boolean = false
+  listId: ID!
+  itemId: ID!
 }
 
 input SignupInput {
