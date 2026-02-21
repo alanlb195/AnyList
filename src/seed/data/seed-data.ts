@@ -1,13 +1,20 @@
 export const SEED_USERS = [
     {
-        fullName: 'Alan Lopez',
+        fullName: 'Alan',
         email: 'alan@google.com',
         password: '123456',
-        roles: ['admin', 'superUser', 'user'],
+        roles: ['superUser'],
         isActive: true
     },
     {
-        fullName: 'Nayeli Ochoa',
+        fullName: 'Mariana',
+        email: 'mariana@google.com',
+        password: '123456',
+        roles: ['admin'],
+        isActive: true
+    },
+    {
+        fullName: 'Nayeli',
         email: 'nayeli@google.com',
         password: '123456',
         roles: ['user'],
@@ -540,3 +547,16 @@ export const SEED_ITEMS = [
     },
 ]
 
+
+
+export const SEED_LISTS = [
+    {
+        name: "Grocery List",
+    },
+    {
+        name: "Shopping List",
+    },
+    {
+        name: "Party List",
+    },
+]
