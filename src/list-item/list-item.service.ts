@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { CreateListItemInput, UpdateListItemInput } from './dto/inputs';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ListItem } from './entities/list-item.entity';
 import { Repository } from 'typeorm';
+
+import { CreateListItemInput, UpdateListItemInput } from './dto/inputs';
+import { ListItem } from './entities/list-item.entity';
 import { List } from 'src/lists/entities/list.entity';
+import { Item } from 'src/items/entities/item.entity';
 import { PaginationArgs, SearchArgs } from 'src/common/dto/args';
 
 @Injectable()
@@ -39,7 +41,9 @@ export class ListItemService {
       .where(`"listId" = :listId`, { listId: list.id });
 
     if (search) {
-      queryBuilder.andWhere('LOWER(name) like :name', { name: `%${search.toLowerCase()}%` });
+      queryBuilder
+        .leftJoin('listItem.item', 'item')
+        .andWhere('LOWER(item.name) like :name', { name: `%${search.toLowerCase()}%` });
     }
 
     return await queryBuilder.getMany();
@@ -55,13 +59,42 @@ export class ListItemService {
     });
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} listItem`;
-  // }
+  async findOne(id: string) {
 
-  // update(id: number, updateListItemInput: UpdateListItemInput) {
-  //   return `This action updates a #${id} listItem`;
-  // }
+    const listItem = await this.listItemRepository.findOneBy({ id });
+
+    if (!listItem) throw new NotFoundException(`List item with id: ${id} not found.`)
+
+    return listItem;
+
+  }
+
+  async update(id: string, updateListItemInput: UpdateListItemInput): Promise<ListItem> {
+
+    const listItem = await this.findOne(id);
+
+    if (updateListItemInput.listId) {
+      listItem.list = { id: updateListItemInput.listId } as List;
+    }
+
+    if (updateListItemInput.itemId) {
+      listItem.item = { id: updateListItemInput.itemId } as Item;
+    }
+
+    Object.assign(listItem, updateListItemInput);
+
+    await this.listItemRepository.save(listItem);
+
+    // Return updated list item
+    const updatedListItem = await this.listItemRepository.findOne({
+      where: { id },
+      relations: ['list', 'item'],
+    });
+
+    if (!updatedListItem) throw new NotFoundException(`List item with id: ${id} not found.`)
+
+    return updatedListItem;
+  }
 
   // remove(id: number) {
   //   return `This action removes a #${id} listItem`;

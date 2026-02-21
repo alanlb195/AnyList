@@ -59,6 +59,7 @@ type Query {
   user(id: ID!): User!
   lists(limit: Int! = 10, offset: Int! = 0, search: String): [List!]!
   list(id: ID!): List!
+  listItem(id: ID!): ListItem!
   revalidateToken: AuthResponse!
 }
 
@@ -72,6 +73,7 @@ type Mutation {
   updateList(updateListInput: UpdateListInput!): List!
   removeList(id: ID!): List!
   createListItem(createListItemInput: CreateListItemInput!): ListItem!
+  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
   signup(signupInput: SignupInput!): AuthResponse!
   login(loginInput: LoginInput!): AuthResponse!
   seed: Boolean!
@@ -111,6 +113,14 @@ input CreateListItemInput {
   completed: Boolean = false
   listId: ID!
   itemId: ID!
+}
+
+input UpdateListItemInput {
+  quantity: Float
+  completed: Boolean = false
+  listId: ID
+  itemId: ID
+  id: ID!
 }
 
 input SignupInput {

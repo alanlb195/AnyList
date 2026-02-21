@@ -22,12 +22,11 @@ export class ListItem {
   completed: boolean;
 
   // Relationships
-  @ManyToOne(() => Item, (item) => item.listItem, { nullable: false, lazy: true })
+  @ManyToOne(() => Item, (item) => item.listItem, { nullable: false })
   @Field(() => Item)
   item: Item;
 
-  @ManyToOne(() => List, (list) => list.listItem, { nullable: false, lazy: true })
+  @ManyToOne(() => List, (list) => list.listItem, { nullable: false })
   @Field(() => List)
   list: List;
-
 }
